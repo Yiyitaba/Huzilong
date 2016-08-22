@@ -1,0 +1,14 @@
+SET mapreduce.job.queuename=low;
+create table hzl.tbl_pat_cross_indexes
+ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
+as
+select
+a.PATIENTID as patiend_id,				--患者唯一标识符
+null as mrn,							--医保卡号
+b.CARD_NO as hospital_card_no,			--医院就诊卡号
+null as outpatient_no,					--门诊号
+a.PATIENT_NO as inpatient_no,			--住院号
+a.PATIENT_NO as inpatient_record_no		--住院病案号
+from 20160728_1_dbamalgasourcedata.NEUSOFTHIS_ORD_IPORDER_IPORDER a
+INNER JOIN 20160728_1_dbamalgasourcedata.NEUSOFTHIS_ADT_PATINFO_PATINFO b on a.PATIENTID = b.PATIENTID
+where a.PATIENTID <> '';

@@ -1,0 +1,31 @@
+SET mapreduce.job.queuename=low;
+create table hzl.tbl_std_studies
+ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
+as
+select
+RID as study_id,				--检查唯一标识符
+visceras as cdt_procedure,			--检查方法
+case catalog when '门诊' then inpatientno
+when '住院' then outpatientno
+else outpatientno end as patient_id,		--患者唯一标识符
+substr(RID,1,find_in_set('.',rid)-1) as visit_id,			--第三方系统的住院号,一次住院分配的号,非患者级别
+buf4 as study_order_id,			--影像检查报告唯一标识符
+pacsid as study_report_id,			--检查医嘱唯一标识符
+null as cdt_modality_type,			--设备类型，例如：普放，CT,MR,超声
+null as cdt_modality,				--影像设备名称
+examdate as study_datetime,			--检查时间
+null as cdt_study_body_parts,			--检查部位，结构化且多部位，合并后用分号；隔开
+null as study_application_id,			--检查申请唯一标识符
+fromdept as cdt_create_app_department,	--申请科室
+fromdoctor as cdt_create_app_doctor,		--申请医生
+null as cdt_create_app_doctor_id,		--申请医生ID
+reqdate as create_application_datetime,	--申请时间
+objective as study_objective,			--检查目的
+casehistory as study_clinical_findings,	--临床所见
+casehistory as study_chief_complaint,		--主诉
+null as study_order_body_parts,		--除病理检查部位，如果RIS是结构化多部位，拼接在一起用分号；隔开
+null as cdt_sampling_part,			--只病理：取材部位
+null as operative_findings,			--只病理：手术所见
+null as diagnosis_item_name,			--临床诊断
+null as icd10_code				--ICD10编码
+from 20160728_1_dbamalgasourcedata.weiruan_us_application_application;

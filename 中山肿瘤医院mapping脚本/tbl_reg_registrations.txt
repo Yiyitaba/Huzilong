@@ -1,0 +1,16 @@
+SET mapreduce.job.queuename=low;
+create table hzl.tbl_reg_registrations
+ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
+AS
+select
+a.clinic_code as outpatient_visit_id,		--一次门／急诊挂号
+a.patientid as patient_id,		--患者唯一标识符
+a.shredder_Doct_name as cdt_visit_doctor,	--实际门诊看诊医生，通过下诊断或者收费来判断
+a.DOCT_DPCD as cdt_visit_doctor_id,		--实际门诊看诊医生ID
+a.DEPT_NAME as cdt_visit_department,		--实际门诊患者就诊科室
+null as cdt_visit_type,			--就诊类型(门诊，急诊，住院，体检等)
+a.OPER_DATE as visit_datetime,			--患者就诊时间(门诊医生工作站下诊断的时间或者提交第一笔处方笺的时间)
+cast(year(a.OPER_DATE)-year(b.BIRTHDAY) as varchar(12))+'ymd' as patient_age,	--患者年龄
+b.PACT_NAME as cdt_fee_type			--患者费用类型(俗称患者性质)
+from 20160728_1_dbamalgasourcedata.neusofthis_ord_oporder_oporder a
+LEFT JOIN 20160728_1_dbamalgasourcedata.neusofthis_adt_patinfo_patinfo b on a.CARD_NO = b.CARD_NO;

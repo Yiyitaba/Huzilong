@@ -1,0 +1,27 @@
+SET mapreduce.job.queuename=low;
+create table hzl.tbl_ndo_inpatient_orders
+ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
+AS
+select
+MO_ORDER as mondrug_order_id,			--非药品医嘱唯一标识符
+ITEM_NAME as mondrug_order_name,		--医嘱名称
+INPATIENT_NO as inpatient_visit_id,		--一次门／急诊挂号或者第三方系统的住院号，一次住院分配的号，非患者级别号
+null as application_id,			--申请唯一标识符
+DATE_BGN as create_order_datetime,		--开医嘱时间
+REC_USERCD as cdt_create_order_doctor_id,	--开医嘱医生ID
+REC_USERNM as cdt_create_order_doctor,	--开医嘱医生姓名
+DEPT_NAME as cdt_create_department,		--开医嘱科室
+MO_STATUS as cdt_order_status,			--医嘱状态，只获取已执行，已停止，已开立
+EXEC_DPNM as cdt_execute_order_department,	--执行医嘱科室
+CLASS_NAME as cdt_order_type,			--医嘱类型：手术，治疗输血等
+FREQUENCY_CODE as cdt_frequency,		--频次，例如：BID
+QTY_TOT as quantity,			--数量
+PRICE_UNIT as cdt_quantity_unit,		--数量单位
+DC_DOCNM as cdt_stop_order_doctor,		--停止医嘱医生姓名
+DC_DOCCD as cdt_stop_order_doctor_id,		--停止医嘱医生ID
+DATE_END as stop_order_datetime,		--停止医嘱时间
+TYPE_NAME as cdt_order_term,		--长期／临时医嘱
+DATE_BGN as order_start_datetime,		--医嘱开始时间
+DATE_END as order_end_datetime			--医嘱结束时间
+from 20160728_1_dbamalgasourcedata.neusofthis_ord_iporder_iporder
+where ITEM_TYPE <> 1;

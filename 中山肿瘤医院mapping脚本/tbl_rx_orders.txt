@@ -1,0 +1,39 @@
+SET mapreduce.job.queuename=low;
+create table hzl.tbl_rx_orders
+ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
+as
+select
+a.SEQUENCE_NO as rx_order_id,						--门诊处方医嘱唯一标识符
+a.RECIPE_NO  as prescription_id,					--门诊处方笺唯一标识符
+a.COMB_NO as order_group_id,						--处方医嘱组唯一标识符，表示医嘱与医嘱之间有关联
+CLINIC_CODE as outpatient_visit_id,					--次门急诊挂号
+a.CLASS_NAME as cdt_order_type,						--医嘱类型，例如：处方
+a.QTY as quantity,							--数量
+a.once_dose as per_dose,						--西药单次剂量，中草药规格剂量
+a.once_unit as cdt_per_unit,						--西药单次剂量单位，中草药剂量单位
+null as dose,								--总剂量
+a.once_unit as cdt_dose_unit,						--总计量单位
+a.frequency_code as cdt_frequency,					--频次，例如：BID，TID
+a.usage_name as cdt_route,						--给药途径
+case a.class_name when '中草药' then a.days else '' end as duration,	--持续时间
+null as cdt_duration_unit,						--持续单位，例如：天
+null as cdt_dosage_form,						--剂型
+a.usage_name as cdt_administration,					--药品用法
+a.specs as cdt_drug_specification,					--药品规格
+a.item_name as brand_name,						--药品商品名
+null as generic_name,							--药品通用名
+b.PACT_NAME as cdt_prescription_fee_type,				--处方笺费别，例如：公费，自费，医保b.PACT_NAME as cdt_prescription_fee_type,				--处方笺费别，例如：公费，自费，医保b.PACT_NAME as cdt_prescription_fee_type,				--处方笺费别，例如：公费，自费，医保
+null as cdt_prescription_type,						--处方笺类型，例如：普通，急诊，儿科，麻，精一，精二
+a.DOCT_NAME as create_prescription_doctor,				--开处方医生
+a.DOCT_CODE as create_prescription_doctor_id,				--开处方医生ID
+a.oper_date as create_prescription_datetime,				--开处方时间
+a.dept_name as create_prescription_department,				--开处方科室
+null as cdt_prescription_status,					--医嘱状态，只获取已开立，已停止
+a.class_name as cdt_drug_type,						--商品类型，例如：西药，中成药，草药
+null as cdt_fee_status,							--处方笺收费状态，只获取已收费，未收费，已退费
+a.pack_qty as package_quantity,						--包装数量
+a.item_unit as package_quantity_unit					--包装数量单位
+FROM
+20160728_1_dbamalgasourcedata.neusofthis_ord_oporder_oporder a
+LEFT JOIN 20160728_1_dbamalgasourcedata.neusofthis_adt_patinfo_patinfo b on a.CARD_NO = b.CARD_NO
+where a.drug_flag = 1;

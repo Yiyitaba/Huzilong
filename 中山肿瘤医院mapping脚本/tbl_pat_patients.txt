@@ -1,0 +1,37 @@
+SET mapreduce.job.queuename=low;
+create table hzl.tbl_pat_patients
+ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
+as
+select
+PATIENTID as patient_id,							--患者唯一标识符
+null as hospital_key,									--医疗机构组织代码
+NAME as patient_name,									--患者姓名
+SEX_CODE_TEXT as cdt_patient_gender,	--患者性别
+MARI_TEXT as cdt_marital_status,			--婚姻状况
+BIRTHDAY as birth_date,								--出生日期
+AREA_CODE as birth_place_province,		--出生地---省，没有分到省市县，存在省这个字段
+null as birth_place_city,							--出生地---市
+null as birth_place_county,						--出生地---县
+WORK_HOME as work_place,							--工作地点
+WORK_TEL as work_telephone,						--工作电话
+WORK_ZIP as work_postcode,						--工作地点---邮编
+NATION_CODE_TEXT as cdt_ethnic_group,	--民族
+COUN_CODE_TEXT as cdt_nationality,		--国籍
+IC_CARDNO as id_card_no,							--身份证号
+null as native_place_province,				--籍贯---省
+null as native_place_city,						--籍贯---市
+HOME as home_address_province,				--家庭住址---省，没有分到省市县，存在省这个字段
+null as home_address_city,						--家庭住址---市
+null as home_address_county,					--家庭住址---县
+HOME_ZIP as home_address_postcode,		--家庭住址---邮编
+HOME_TEL as home_telephone,						--家庭电话
+null as domicile_place_province,			--户口住址---省，没有分到省市县，存在省这个字段
+null as domicile_place_city,					--户口住址---市
+null as domicile_place_county,				--户口住址---县
+null as domicile_place_postcode,			--户口住址邮编
+LINKMAN_NAME as contact_name,					--联系人--姓名，取第一联系人
+null as contact_relationship,					--联系人关系
+LINKMAN_ADD as contact_address,				--联系人地址
+LINKMAN_TEL as contact_telephone,			--联系人电话
+PROF_TEXT as cdt_occupation						--职业
+from 20160728_1_dbamalgasourcedata.NEUSOFTHIS_ADT_PATINFO_PATINFO;

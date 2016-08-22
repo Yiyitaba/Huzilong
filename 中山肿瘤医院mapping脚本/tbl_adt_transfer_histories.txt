@@ -1,0 +1,14 @@
+SET mapreduce.job.queuename=low;
+create table hzl.tbl_adt_transfer_histories
+ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
+as
+SELECT
+CLINIC_NO as inpatient_visit_id,--第三方系统的住院号，一次住院分配的号，非患者级别号
+NEW_DATA_NAME as transfer_to_department,--转入科室
+null as transfer_to_ward,--转入病房
+LastUpdatedTime as transfer_to_datetime,--转入时间
+OLD_DATA_NAME as transfer_from_department,--转出科室
+null as transfer_from_ward,--转出病房
+LastUpdatedTime as transfer_from_datetime--转出时间
+FROM 20160728_1_dbamalgasourcedata.neusofthis_adt_shift_shift
+WHERE SHIFT_TYPE in ('RO','RI');

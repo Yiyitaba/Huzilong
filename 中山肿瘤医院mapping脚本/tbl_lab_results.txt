@@ -1,0 +1,21 @@
+SET mapreduce.job.queuename=low;
+create table hzl.tbl_lab_results
+ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
+as
+select
+SequenceNumber as visit_diagnosis_id,--诊断唯一标识符，获取第三方系统分配的唯一标识符
+null as parent_visit_diagnosis_id,--父诊断外键，获取第三方系统分配的唯一标识符
+INPATIENT_NO as visit_id,--一次门/急诊挂号，一次住院分配的号
+DIAG_KIND_TEXT as cdt_diagnosis_type,--诊断类型，例如入院诊断，门诊诊断
+null as cdt_create_diagnosis_role,--下诊断用户角色
+DOCT_NAME as cdt_create_diagnosis_doctor,--下诊断医生名称
+DOCT_CODE as cdt_create_diagnosis_doctor_id,--下诊断医生ID
+DIAG_DATE as create_diagnosis_datetime,--下诊断时间
+HAPPEN_NO as diagnosis_sequence,--诊断顺序号
+OPER_TYPE_TEXT as diagnosis_comments,--诊断说明
+null as is_confirmed_diagnosis,--是否确诊(trun/false)
+case DIAG_KIND when 1 then 'trun'
+else 'false' end as is_main,--是否主诊断(trun/false)
+DIAG_NAME as diagnosis_item_name,--诊断名称
+ICD_CODE as icd10_code--ICD10编码
+from 20160728_1_dbamalgasourcedata.NEUSOFTHIS_ADT_DG_DG;

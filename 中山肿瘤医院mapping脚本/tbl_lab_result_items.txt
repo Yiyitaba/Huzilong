@@ -1,0 +1,21 @@
+SET mapreduce.job.queuename=low
+create table hzl.tbl_lab_result_items
+ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
+AS
+select
+SequenceNumber as result_item_id,		--检验项目结果唯一标识符
+res_id as lab_result_id,			--检验报告唯一标识符外键
+res_itm_ecd as result_item_name,		--检验项目名称
+null as qualitative_result_item_value,		--定性检验结果值
+null as quantitative_result_item_value,		--定量检验结果值
+null as hybrid_result_item_value,		--不区分定性和定量检验结果值
+null as quantitative_warn_high_value,		--定量检验警告高值
+null as quantitative_warn_low_value,		--定量检验警告低值
+res_ref_h as quantitative_normal_high_value,	--定量检验正常高值
+res_ref_l as quantitative_normal_low_value,	--定量检验正常低值
+null as reference_range,			--参考范围
+null as abnormal_indicator,			--非正常指示值，例如：L,H,R
+res_unit as quantitative_unit,			--定量单位
+null as cdt_result_item_category		--检验项目分类显示名称(定性/定量/半定量)
+from
+20160728_1_dbamalgasourcedata.huiqiao_lis_resulto_resulto;

@@ -1,0 +1,17 @@
+SET mapreduce.job.queuename=low;
+create table hzl.tbl_ipb_charges
+ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
+AS
+select
+SequenceNumber as visit_charge_id,		--每笔费用唯一标识符
+MO_ORDER as order_id,			--住院医嘱唯一标识符
+INPATIENT_NO as inpatient_visit_id,		--第三方系统的住院号,一次住院分配的号,非患者级别号
+ITEM_NAME as cdt_charge_item,			--收费项目名称
+ITEM_PRICE as unit_price,			--实际单价
+QTY_TOT as quantity,				--数量
+null as cdt_charge_status,			--收费状态，只采集已收费，已退费的状态数据
+CLASS_NAME as cdt_charge_item_type,		--收费项目类型
+PRICE_UNIT as cdt_quantity_unit,		--数量单位
+ITEM_PRICE * ITEM_PRICE as total_price,	--总价
+null as deductible_amount			--自付金额
+from 20160728_1_dbamalgasourcedata.neusofthis_ord_iporder_iporder;

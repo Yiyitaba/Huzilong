@@ -1,0 +1,39 @@
+SET mapreduce.job.queuename=low;
+create table hzl.tbl_mar_medication_orders
+ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
+AS
+select
+MO_ORDER as mar_order_id,			--住院药品医嘱唯一标识符
+comb_no as order_group_id,		--医嘱组唯一标识符，表示医嘱与医嘱之间有关联
+INPATIENT_NO as inpatient_visit_id,		--第三方系统的住院号，一次住院分配的号，非患者级别号
+CLASS_NAME as cdt_order_type,			--医嘱类型，例如：药品
+QTY_TOT as quantity,			--数量
+BASE_DOSE as per_dose,				--西药单次剂量，中草药规格剂量
+DOSE_UNIT as cdr_per_unit,			--西药单次剂量单位，中草药剂量单位
+null as dose,		--总剂量
+DOSE_UNIT as cdt_dose_unit,			--总剂量单位
+FREQUENCY_CODE as cdt_frequency,		--频次，例如：BID,TID
+USE_NAME as cdt_route,				--给药途径
+Shredder_DECOMPOSE as cdt_order_term,		--长期／临时医嘱
+DOSE_MODEL as cdt_dosage_form,			--剂型
+USE_NAME as cdt_administration,			--药品用法
+SPECS as cdt_drug_specification,		--药品规格
+ITEM_NAME as brand_name,			--药品商品名
+NULL as generic_name,				--药品通用名
+REC_USERNM as cdt_create_order_doctor,		--开立医嘱医生姓名
+REC_USERCD as cdt_create_order_doctor_id,	--开立医嘱医生ID
+DEPT_NAME as cdt_create_department,		--开立医嘱科室
+DATE_BGN as create_order_datetime,		--开立医嘱时间
+DATE_BGN as administration_start_datetime,	--给药开始时间
+DATE_END as administration_end_datetime,	--给药结束时间
+DC_DOCNM as cdt_stop_order_doctor,		--停止医嘱医生姓名
+DC_DOCCD as cdt_stop_order_doctor_id,		--停止医嘱医生ID
+DATE_END as stop_order_datetime,		--停止医嘱时间
+MO_STATUS as cdt_order_status,			--医嘱状态，只获取已执行，已停止，已取消
+NULL as cdt_cancel_order_doctor,		--取消医嘱医生姓名
+NULL as cdt_cancel_order_doctor_id,		--取消医嘱医生ID
+NULL as cdt_cancel_order_datetime,		--取消医嘱时间
+DRUG_TYPE_TEXT as cdt_drug_type,		--商品类型，例如：西药，中成药，草药
+EXEC_DPNM as cdt_execute_order_department	--执行医嘱科室，非发药科室
+from 20160728_1_dbamalgasourcedata.neusofthis_ord_iporder_iporder
+where ITEM_TYPE = 1				--药品医嘱

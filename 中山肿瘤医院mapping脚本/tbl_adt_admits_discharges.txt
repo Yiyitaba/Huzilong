@@ -1,0 +1,19 @@
+SET mapreduce.job.queuename=low
+create table hzl.tbl_adt_admits_discharges
+ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
+as
+SELECT
+  inpatient_no as inpatient_visit_id,--第三方系统的住院号，一次住院分配的号，非患者级别号
+  patientid as patient_id,--患者唯一标识符外键
+  DEPT_NAME as cdt_admit_department,--入院科室
+  NURSE_CELL_NAME as cdt_admit_ward,--入院病区
+  null as cdt_discharge_department,--出院科室
+  null as cdt_discharge_ward,--出院病区
+  IN_DATE as admit_datetime,--入院时间
+  OUT_DATE as discharge_datetime,--出院时间
+  CAST(year(IN_DATE)-year(BIRTHDAY) as varchar(12)) + 'ymd' as patient_age,--患者年龄
+  PACT_NAME as cdt_fee_type,--患者费用类型(俗称患者性质)
+  IN_SOURCE_TEXT as cdt_visit_type,--就诊类型
+  CHARGE_DOC_NAME as cdt_attending_physician,--主治医生姓名
+  CHARGE_DOC_CODE as cdt_attending_physician_id--主治医生ID
+  FROM 20160728_1_dbamalgasourcedata.neusofthis_adt_ipreg_ipreg;
